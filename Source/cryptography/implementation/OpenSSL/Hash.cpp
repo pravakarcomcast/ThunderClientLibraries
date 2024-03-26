@@ -27,6 +27,10 @@
 #include <openssl/md5.h>
 #include <openssl/hmac.h>
 #include <openssl/evp.h>
+#include <iostream>
+#include <string>
+#include <ctime>
+#include <iomanip>
 
 #include "Vault.h"
 
@@ -167,15 +171,29 @@ public:
 public:
     uint32_t Ingest(const uint32_t length, const uint8_t* data) override
     {
+        std::cout<<"#### Pravakar Ingest Enter ####\n";
+         std::cout << "Length: " << length << std::endl;
         ASSERT(data != nullptr);
+
+        if (length > 0) {
+        // Print the data in hexadecimal format
+        std::cout << "Data: ";
+        for (uint32_t i = 0; i < length; ++i) {
+            std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(data[i]) << " ";
+        }
+        std::cout << std::dec << "\n"; // Switch back to decimal for any future numbers
+    } else {
+        std::cout << "No data to display (length is 0).\n";
+    }
 
         if (_failure == false) {
             if (OPERATION::Update(_ctx, data, length) == 0) {
+                std::cout<<"#### Pravakar failed to update ####\n";
                 TRACE_L1("Update() failed");
                 _failure = true;
             }
         }
-
+         std::cout<<"#### Pravakar Ingest End ####\n";
         return (_failure? 0 : length);
     }
 
@@ -255,7 +273,9 @@ void hash_destroy(HashImplementation* hash)
 
 uint32_t hash_ingest(HashImplementation* hash, const uint32_t length, const uint8_t data[])
 {
+    std::cout<<"#### Pravakar hash_ingest Enter ####\n";
     ASSERT(hash != nullptr);
+    std::cout<<"#### Pravakar hash_ingest calling Ingest ####\n";
     return (hash->Ingest(length, data));
 }
 
